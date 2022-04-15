@@ -1,0 +1,32 @@
+.navbar {
+    background-color: #adeec4 !important;
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+.btn-circle {
+    width: 50px;
+    height: 50px;
+    padding: 7px 10px;
+    border-radius: 25px;
+    font-size: 18px;
+    text-align: center;
+    background-color: #1DB954;
+    font-family: 'Open Sans', sans-serif;
+}
+.n {
+    font-family: 54px;
+}
+.b {
+    text-align: center;
+}
+.news-article {
+    background-color: white;
+}
+
+.head {
+    padding: 10px;
+}
+
+.form-container {
+    padding: 10px;
+}

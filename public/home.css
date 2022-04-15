@@ -1,0 +1,380 @@
+.home-page-steph {
+  background-color: rgb(230, 230, 230);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+  
+
+.profile-container {
+  height: 60px;
+  width: 60px;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  float: right;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.profile-button {
+  height: 50px;
+  width: 50px;
+  border-radius: 32px/32px;
+  outline: black;
+  background-color: #1DB954;
+  background-size: 50px 50px;
+}
+
+.feed-text {
+  letter-spacing: 0;
+  font-size: 28px;
+  padding: 10px;
+}
+
+.main-container {
+  height: 90%;
+  left: 50%;
+  width: 50%;
+  margin: auto;
+  padding: 5px;
+  overflow-y: scroll;
+}
+
+.post-container {
+  height: fit-content;
+  width: auto;
+  margin: 10px 10px 20px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.post-header {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+}  
+
+.poster-profile-circle {
+  border-radius: 30px;
+  height: 60px;
+  left: 15px;
+  top: 13px;
+  width: 60px;
+  background-color: #1DB954;
+  border-style: solid;
+  border-width: 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 5px;
+}
+
+.poster-profile-initials {
+  text-align: center;
+  margin: auto;
+  top: 50%;
+}
+
+.post-head-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 5px;
+  width: 80%;
+}
+
+.time {
+  right: 10px;
+  position: absolute;
+  color: #adeec4;
+}
+
+.post-content {
+  padding: 10px;
+}
+
+.home-page-steph .overlap-group {
+  height: 32px;
+  left: 306px;
+  top: 318px;
+  width: 326px;
+  border-style: dotted;
+  background-color: white;
+}
+
+
+.home-page-steph .write-a-comment {
+  height: 32px;
+  left: 7px;
+  letter-spacing: 0;
+  position: absolute;
+  top: 0;
+  width: 319px;
+}
+
+
+.home-page-steph .likes-0 {
+  height: 28px;
+  left: 41px;
+  letter-spacing: 0;
+  position: absolute;
+  top: 130px;
+}
+
+.home-page-steph .text-6 {
+  left: 41px;
+  letter-spacing: 0;
+  position: absolute;
+  top: 175px;
+  width: 506px;
+}
+
+/* .home-page-steph .overlap-group10 {
+  height: 41px;
+  width: auto;
+  border-style: dotted;
+} */
+
+/* .home-page-steph .rectangle-31 {
+  background-color: #a29f9f;
+  height: 24px;
+  width: auto;
+} */
+
+
+.home-page-steph .invite-others {
+height: 41px;
+width: auto;
+}
+
+.home-page-steph .initials {
+height: 68px;
+letter-spacing: 0;
+text-align: center;
+}
+
+.friend-request-buttons-container {
+display: flex;
+flex-direction: row;
+padding-top: 5px;
+gap: 10px;
+}
+
+.confirm-button {
+background-color: #adeec4 !important;
+}
+
+.ignore-button {
+background-color: lightgrey !important;
+}
+
+.home-page-steph .confirm-1 {
+  height: 57px;
+  left: 1px;
+  letter-spacing: 0;
+  text-align: center;
+  top: 1px;
+  width: 126px;
+}
+
+.valign-text-middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: fit-content;
+  height: fit-content;
+}
+
+.right-sidebar {
+  right: 0;
+  height: 100%;
+  top: 10%;
+  width: 20%;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-sidebar-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.friend-request-container {
+  height: 25%;
+  width: auto;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+.friend-request {
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.requester-name {
+  height: 25px;
+  letter-spacing: 0;
+}
+
+.new-friends-container {
+  height: 20%;
+  width: auto;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+.new-friend {
+  color: #1DB954;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.chat-container {
+  height: 35%;
+  top: 631px;
+  width: auto;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  background-color: white;
+}
+
+.card-body {
+  padding-top: 5px;
+}
+
+.post-info {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+}
+
+.comments {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  position: absolute;
+  right: 10px;
+}
+
+.engagement-buttons {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.like-button {
+  color: #adeec4;
+  border-color: #adeec4;
+}
+
+.comment-button {
+  color: #1DB954;
+  border-color: #1DB954;
+}
+
+.comments-container {
+  height: fit-content;
+  max-height: 200px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: scroll;
+}
+
+.comment {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.comment-body {
+  background-color: rgb(233, 231, 231);
+  padding: 5px 10px 5px 10px;
+  border-radius: 10px;
+  max-width: 75%;
+}
+
+.commenter-profile {
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+  background-size: 30px 30px;
+}
+
+.comment-text {
+  color: #1DB954;
+}
+
+.commenter {
+  color: black !important;
+}
+
+.comment-input-container {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-input {
+  width: 75%;
+}
+
+.likes {
+  display: flex;
+  gap: 5px;
+}
+
+.icon {
+  margin-top: 5px;
+}
+
+.new-chat-button {
+  color: white;
+  border-color: #1DB954;
+  background-color: #1DB954; 
+}
+
+.chat-button {
+  color: #1DB954;
+  border-color: #1DB954;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+
+.chat-container-header {
+  display: flex;
+  gap: 7px;
+}
+
+.clear-button {
+  color: white;
+  border-color: #1DB954;
+  background-color: #1DB954; 
+}
+
+.chats-container {
+  display: flex;
+  flex-direction: column;
+}

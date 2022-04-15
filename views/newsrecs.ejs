@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form name="recsForm" action="/newsrecs" method="post" onsubmit="validate(document.searchForm.searchTerm)">
+        <font color = "black", label="user">Enter username:</label>
+        <input type="text" name="user">
+        <input type="submit" value="Submit">
+    </form> 
+    
+    <!-- OUTPUT OF THE SEARCH HERE -->
+    <%if (results != null) { %>
+    <% for (var i = 0; i < results.length; i++) { %>
+    <div class="news-article">
+        <span class='c'>
+        <table>
+            <thead>
+                <tr>
+                    <th><%= results[i].authors %></th>
+                    <th><a href=<%= results[i].link%>><%= results[i].headline%></a>
+                    <th>Category: <%= results[i].category %></th>
+                </tr>
+            </thead>
+            <tb>
+                <tr>
+                    <td><%= results[i].short_description %></td>
+                </tr>
+                <tr>
+                    <td>Likes: </td>
+                </tr>
+            </tb>
+        </table>
+    </div>
+    <% } %>
+    <% } %>
+</body>
+</html>

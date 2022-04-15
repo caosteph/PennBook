@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+body {
+  height: 100%;
+  background: linear-gradient(90deg, #1DB954 55%, #ffffff 35%);
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+
+.login-box {
+  max-width: 330px;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-left: 30px
+}
+.login-box .form-control {
+  margin-bottom: 10px;
+}
+
+.login-3 {
+  font-size: 80px;
+  color: white;
+  font-weight: lighter;
+  margin-left: 30px;
+  margin-top: 50px;
+}
+
+.login-2 {
+    font-size: 80px;
+    color: white;
+    font-weight: lighter;
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+.login-1 {
+    font-size: 100px;
+    color: white;
+    margin-left: 30px;
+}
+
+.submit-button {
+    height: 40px;
+    text-align: center;
+    width: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: #1DB954;
+    text-align: center;
+    font-size: 16px;
+    align-self: right;
+    float: bottom;
+  }

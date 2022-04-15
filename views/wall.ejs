@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"> </script>
+  <link rel="stylesheet" href="wall.css">
+  <link rel="stylesheet" href="home.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content=
+        "width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+      
+  <script>
+
+          var loadSinglePost = function(creator_name, wall_username, wall_name, type, initials, text, media) {
+              $.post('/post_id', function(data) {
+                var postID = data;
+                console.log("post id is: " + postID);
+              var headerText = "";
+              if (type == "status") {
+                headerText = creator_name + " has a new status update.";
+              } else if (type == "media-friend" || type == "text-friend") {
+                headerText = creator_name + " posted on " + wall_name + "'s wall.";
+              } else {
+                headerText = creator_name;
+              }
+              var statusUpdate = 
+
+                "<div class='post-container' id='" + postID + "'>" +
+                  "<div class='card' id='" + postID + "'>" +
+                      "<div class='post-header'>" + 
+                        "<div class='poster-profile'>" +
+                            "<a class='poster-profile' href='/wall'>" +
+                              "<div class='poster-profile-circle'>" +
+                                  "<div class='poster-profile-initials'>"+ initials +"</div>" +
+                              "</div>" +
+                            "</a>" +
+                        "</div>" +
+                        "<div class='post-head-text'>"+ headerText + "</div>" +
+                        "<div class='time'>0sec ago</div>" +
+                      "</div>" +
+                      "<div class='card-body'>" +
+                        "<img id='postimg" + postID + "' src='" + media + "'' class='center'>" +
+                        "<div class='card-text'>" + text + "</div>" +
+                      "</div>" +
+                      "<ul class='list-group list-group-flush'>" +
+                        "<li class='list-group-item'>" +
+                            "<div class='post-info'>" +
+                              "<div class='likes'>" +
+                                  "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-hand-thumbs-up icon' viewBox='0 0 16 16'>" +
+                                    "<path d='M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z'></path>"
+                                  + "</svg>" +
+                                  "<div class='num-likes'>0 Likes</div>" +
+                              "</div>" +
+                              "<div class='comments'>" +
+                                  "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-right icon' viewBox='0 0 16 16'>" +
+                                  +  "<path d='M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z'></path>"
+                                  + "</svg>" +
+                                  "<div class='num-comments'>0 Comments</div>" +
+                              "</div>" +
+                            "</div>" +
+                            "<div class='engagement-buttons'><button class='btn like-button' id='" + postID + "'>Like</button><button class='btn comment-button focus-comment' id='61'>Comment</button></div>"
+                        + "</li>" +
+                        "<li class='list-group-item'>Comments<div class='comments-container' id='" + postID + "'></div>" +
+                        "<div class='comment-input-container'>" +
+                        "<input type='text' class='form-control comment-input' placeholder='Write a comment...'' id='" + postID +"'>" +
+                        "<button class='btn comment-button post-comment' id='" + postID + "'>Comment</button>" +
+                        "</div>" +
+                        "</li>" +
+                      "</ul>" +
+                  "</div>" +
+                "</div>";
+
+
+                let feedContainer = $(".feed-container");
+                feedContainer.prepend(statusUpdate);
+                
+                //BUTTON LISTENERS
+                console.log("about to make listeners");
+                $(".focus-comment").click(function() {
+                    //let postID = this.id;
+                    console.log(postID);
+                    $("#" + postID + " .comment-input").focus();
+                })
+
+                  $(".post-comment").click(function() {
+                      let d = new Date();
+                      let t = d.toISOString();
+                      let text = $(this).prev().val();
+                      //let id = this.id;
+                      let id = postID;
+                      console.log("id : " + id + "text: " + text);
+                      if (text) {
+                          $.post("/comment", {
+                              post_id: id,
+                              time: t, 
+                                time: t, 
+                              time: t, 
+                              text: text
+                          }, function(data, textStatus, jqXHR) {
+                            let name = data;
+                            $.getJSON("/check", function(data, err) {
+                                if (data) {
+                                  console.log("checked username");
+                                    $.getJSON("/profilePicture/" + data, function(data, err) {
+                                        let imageURL = data;
+                                        $("#" + id + " .comments-container").append(
+                                            "<div class='comment' id='" + t + "'>"
+                                            + "<div class='commenter-profile'>" 
+                                                + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                            + "</div>"
+                                            + "<div class='comment-body'>"
+                                            + "<div class='commenter'>" + name + " " + getFormattedTime(t) + "</div>"
+                                            + "<div class='comment-text'>" + text + "</div>"
+                                            + "</div>"
+                                            + "</div>"
+                                        );
+
+                                        let currentCount = $("#" + postID + " .num-comments").text().split(" ");
+                                        let newCount = (parseInt(currentCount) + 1).toString();
+                                        let newText = newCount + " Comments";
+                                        $("#" + postID + " .num-comments").text(newText);   
+
+                                        $("#" + id + " .comments-container").focus();
+                                    });
+                                }
+                            });
+                          }).fail(function() {
+                              alert( "comments AJAX Call Failed" );
+                          });
+
+                          $(this).prev().val("");
+                      } else {
+                          alert("Invalid input for comment.");
+                      }
+                  })
+
+                            $(".like-button").click(function() {
+                                //let postID = this.id;
+                                $.post("/like", { post_id: postID, table: "likes" }, function(data, textStatus, jqXHR) {
+                                    let prev = $("#" + postID + " .num-likes").text();
+                                    let numLikes = parseInt(prev.split(" ")[0]);
+                                    if (data == "deleted") {
+                                        numLikes--;
+                                        $("#" + postID + " .like-button").css("background-color", "white");
+                                    } else {
+                                        numLikes++;
+                                        $("#" + postID + " .like-button").css("background-color", "#1DB954");
+                                    }
+
+                                  let newText = numLikes.toString() + " Likes";
+                                  if (numLikes == 1) {
+                                      newText = numLikes.toString() + " Like";                                                             
+                                  }
+                                  $("#" + postID + " .num-likes").text(newText);
+                              })
+                          });
+                          //post_id, time, creator_username, type, friend_name, wall_name, wall_username, media, text
+                          var formData = {
+                            post_id: postID,
+                            type: type,
+                            // friend_username: friend_username,
+                            wall_name: wall_name,
+                            wall_username: wall_username,
+                            media: media,
+                            text: text
+                          }
+                          console.log(formData);
+
+                          console.log("about to do new post");
+                          $.post('/newPost', formData, function(data){
+                            console.log("inside post");
+                            //console.log(data);
+                            //window.location.href = '/wall';
+                          });
+              })
+              
+            }
+
+            var getFormattedTime = function(t) {
+                let date = new Date(t);
+                let elapsed_time = Date.now() - date;
+                let time_text = "0";
+
+                if (elapsed_time < 86400000) {
+                    let hours = Math.floor((elapsed_time / 1000) / 3600);
+                    let minutes = Math.floor((elapsed_time / 1000) / 60);
+                    if (hours > 0) {
+                        time_text = hours.toString() + "h ago"
+                    } else {
+                        time_text = minutes.toString() + "min ago"
+                    }
+                } else {
+                    let month = date.getMonth();
+                    let day = date.getDate();
+                    let year = date.getFullYear();
+                    let hour = date.getHours();
+                    let min = date.getMinutes();
+                    if (year != new Date(Date.now()).getFullYear()) {
+                        time_text = month + "/" + day + "/" + year;
+                    } else {
+                        if (parseInt(min) < 10) {
+                            min = "0" + min;
+                        }
+                        time_text = month + "/" + day + " " + hour + ":" + min;
+                    }
+                }
+                return time_text;
+            }
+            
+            var loadPosts = function() {
+                let feedContainer = $(".feed-container");
+                var postList = [];
+                $.getJSON("/getWall", function(data) {
+                    if (data) {
+                        console.log("LOOPING THROUGH POSTS");
+                        console.log(data);
+                        var prevPost = {};
+                        data.forEach((post) => {
+                            let poster = post.creator_username;
+                            console.log(poster);
+                            let poster_name = post.creator_name;
+                            //let media = "'" + post.media + "'";
+                            let media = post.media;
+                            console.log("media is: " + media);
+                            //console.log(poster_name);
+                            let type = post.type;
+                            console.log(type);
+                            let postID = post.post_id;
+                            if ($("#" + postID + ".post-container").length > 0) {
+                              return;
+                            }
+                            let initials = (poster_name.split(" ")[0]).charAt(0) + poster_name.split(" ")[1].charAt(0);
+                            let date = new Date(post.time);
+                            let elapsed_time = Date.now() - date;
+                            
+                            let time_text = "0";
+
+                            if (elapsed_time < 86400000) {
+                                let hours = Math.floor((elapsed_time / 1000) / 3600);
+                                let minutes = Math.floor((elapsed_time / 1000) / 60);
+                                if (hours > 0) {
+                                    time_text = hours.toString() + "h ago"
+                                } else {
+                                    time_text = minutes.toString() + "min ago"
+                                }
+                            } else {
+                                let month = date.getMonth();
+                                let day = date.getDate();
+                                let year = date.getFullYear();
+                                let hour = date.getHours();
+                                let min = date.getMinutes();
+                                if (year != new Date(Date.now()).getFullYear()) {
+                                    time_text = month + "/" + day + "/" + year;
+                                } else {
+                                    time_text = month + "/" + day + " " + hour + ":" + min;
+                                }
+                            }
+
+                            postList.push(postID);
+
+                            feedContainer.prepend(
+                                "<div class='post-container' id='" + postID + "'>" 
+                                    + "<div class='card'>" 
+                                        + "<div class='post-header'>" 
+                                            + "<div class='poster-profile'>" 
+                                                + "<a class='poster-profile'>"
+                                                    + "<div class='poster-profile-circle'>" 
+                                                        + "<div class='poster-profile-initials'>INITIALS HERE</div>" 
+                                                    + "</div>" 
+                                                + "</a>"
+                                            + "</div>" 
+                                            + "<div class='post-head-text'>" 
+                                                + "<div class='post-head-row'></div>" 
+                                            + "</div>" 
+                                            + "<div class='time'>TIME HERE</div>"  
+                                            + "</div>" 
+                                        + "<div class='card-body'>" +
+                                          "<img id = 'postimg"+ postID + "' src = '" + media + "' class='center'>" 
+                                            + "<div class='card-text'>TEXT HERE</div>" 
+                                        + "</div>" 
+                                        + "<ul class='list-group list-group-flush'>" 
+                                            + "<li class='list-group-item'>" 
+                                                + "<div class='post-info'>" 
+                                                    + "<div class='likes'>" 
+                                                        + "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-hand-thumbs-up icon' viewBox='0 0 16 16'>" 
+                                                            + "<path d='M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z'/>" 
+                                                        + "</svg>" 
+                                                        + "<div class='num-likes'>likes</div>" 
+                                                    + "</div>" 
+                                                    + "<div class='comments'>" 
+                                                      + "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-right icon' viewBox='0 0 16 16'>" 
+                                                          + "<path d='M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z'/>" 
+                                                      + "</svg>" 
+                                                      + "<div class='num-comments'>comments" + 
+                                                  + "</div></div>" 
+                                                + "</div></div></div>" 
+                                                + "<div class='engagement-buttons'>" 
+                                                    + "<button class='btn like-button'>Like</button>" 
+                                                    + "<button class='btn comment-button focus-comment'>Comment</button>" 
+                                                + "</div>" 
+                                            + "</li>" 
+                                            + "<li class='list-group-item'>" 
+                                                + "Comments" 
+                                                + "<div class='comments-container'></div>" 
+                                                + "<div class='comment-input-container'>" 
+                                                    + "<input type='text' class='form-control comment-input' placeholder='Write a comment...'>" 
+                                                    + "<button class='btn comment-button post-comment'>Comment</button>" 
+                                                + "</div>" 
+                                            + "</li>" 
+                                        + "</ul>" 
+                                    + "</div>" 
+                                + "</div>"
+                            );
+
+                            let postContainer = $("#" + postID + " .post-container");
+
+                            //Handling text of post header
+                            let header = $("#" + postID + " .post-head-text");
+                            if (type == "text-own" || type == "media-own") {
+                                header.text(poster_name);
+                            } else if (type == "status") {
+                              header.text(poster_name + " has a new status update.");
+                            } else if (type == "text-friend" || type == "media-friend") {
+                                $("#" + postID + " .post-head-row").append(
+                                    poster_name +
+                                    " <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-caret-right-fill' viewBox='0 0 16 16'> "
+                                    + "<path d='m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z'/>"
+                                    + "</svg>"
+                                    + post.wall_name
+                                )
+                            }
+
+                            $("#" + postID + " .poster-profile-initials").text(initials);
+                            $("#" + postID + " .card-text").text(post.text);
+                            $("#" + postID + " .time").text(time_text);
+                            $("#" + postID + " .comment-button").attr("id", postID);
+                            $("#" + postID + " .like-button").attr("id", postID);
+                            $("#" + postID + " .comment-input").attr("id", postID);
+
+                            formData = {id: postID};
+
+
+                            let commentsContainer = $("#" + postID + " .comments-container");
+                            commentsContainer.attr("id", postID);
+                            $("#" + postID + " .card").attr("id", postID);
+
+                            //Link to poster's wall
+                            $("a.poster-profile").attr("href", "/wall/" + poster);
+
+                            //DISPLAYING COMMENTS
+                            $.getJSON("/comments/" + postID, function(data, err) {
+                                if (data) {
+                                    if (data.length == 1) {
+                                        $("#" + postID + " .num-comments").text("1 Comment");    
+                                    } else {
+                                        $("#" + postID + " .num-comments").text(data.length + " Comments");
+                                    }
+                                    data.forEach((comment) => {
+                                      //Retrieving profile picture of commenter
+                                      $.getJSON("/profilePicture/" + comment.commenter_username, function(data, err) {
+                                          let imageURL = data;
+                                          commentsContainer.append(
+                                              "<div class='comment' id='" + comment.time + "'>"
+                                              + "<div class='commenter-profile'>" 
+                                                  + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                              + "</div>"
+                                              + "<div class='comment-body'>"
+                                              + "<div class='commenter'>" 
+                                                  + "<a class='commenter' href='/wall/" + comment.commenter_username + "'>"
+                                                  + comment.commenter_name 
+                                                  + "</a>"
+                                                  + "   " + getFormattedTime(comment.time) 
+                                              + "</div>"
+                                              + "<div class='comment-text'>" + comment.text + "</div>"
+                                              + "</div>"
+                                              + "</div>"
+                                          );
+                                          cList.push(comment.time);
+                                        });
+                                    })
+                                } else {
+                                    $("#" + postID + " .num-comments").text("0 Comments");
+                                }
+                            })
+
+                            //newlikes
+
+                            $.getJSON("/likes/likes/" + postID, function(data, err) {
+                              console.log("inside getjson");
+                              if (data.likes) {
+                                  if (data.likes.length == 1) {
+                                      $("#" + postID + " .num-likes").text("1 Like");
+                                  } else {
+                                      $("#" + postID + " .num-likes").text(data.likes.length + " Likes");
+                                      console.log(post.text);
+                                      console.log("num likes "  + data.likes.length);
+                                  }
+                              } else {
+                                  $("#" + postID + " .num-likes").text("0 Likes");
+                              }
+
+                              if (data.liked) {
+                                  $("#" + postID + " .like-button").css("background-color", "#1DB954");
+                              }
+                            });
+                            prevPost = post;
+                        })
+
+                        //BUTTON LISTENERS
+                        $(".focus-comment").click(function() {
+                                let postID = this.id;
+                                $("#" + postID + " .comment-input").focus();
+                            })
+
+                            $(".post-comment").click(function() {
+                                let d = new Date();
+                                let t = d.toISOString();
+                                let text = $(this).prev().val();
+                                let id = this.id;
+
+                                if (text) {
+                                    $.post("/comment", {
+                                        post_id: id,
+                                        time: t, 
+                                        text: text
+                                    }, function(data, textStatus, jqXHR) {
+                                      let name = data;
+                                      $.getJSON("/check", function(data, err) {
+                                          if (data) {
+                                              $.getJSON("/profilePicture/" + data, function(data, err) {
+                                                  let imageURL = data;
+                                                  $("#" + id + " .comments-container").append(
+                                                      "<div class='comment' id='" + t + "'>"
+                                                      + "<div class='commenter-profile'>" 
+                                                          + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                                      + "</div>"
+                                                      + "<div class='comment-body'>"
+                                                      + "<div class='commenter'>" + name + " " + getFormattedTime(t) + "</div>"
+                                                      + "<div class='comment-text'>" + text + "</div>"
+                                                      + "</div>"
+                                                      + "</div>"
+                                                  );
+
+                                                  let currentCount = $("#" + postID + " .num-comments").text().split(" ");
+                                                  let newCount = (parseInt(currentCount) + 1).toString();
+                                                  let newText = newCount + " Comments";
+                                                  $("#" + postID + " .num-comments").text(newText);   
+
+                                                  $("#" + id + " .comments-container").focus();
+                                              });
+                                          }
+                                      });
+                                    });
+
+                                    $(this).prev().val("");
+                                } else {
+                                    alert("Invalid input for comment.");
+                                }
+
+                                
+                            })
+
+                            $(".like-button").click(function() {
+                                let postID = this.id;
+                                $.post("/like", { post_id: this.id, table: "likes" }, function(data, textStatus, jqXHR) {
+                                    let prev = $("#" + postID + " .num-likes").text();
+                                    let numLikes = parseInt(prev.split(" ")[0]);
+                                    if (data == "deleted") {
+                                        numLikes--;
+                                        $("#" + postID + " .like-button").css("background-color", "white");
+                                    } else {
+                                        numLikes++;
+                                        $("#" + postID + " .like-button").css("background-color", "#1DB954");
+                                    }
+
+                                    let newText = numLikes.toString() + " Likes";
+                                    if (numLikes == 1) {
+                                        let newText = numLikes.toString() + " Like";                                
+                                    }
+                                    $("#" + postID + " .num-likes").text(newText);
+                                })
+                            });
+                    }
+                });
+            }
+            let checkLoggedIn = function() {
+                console.log("about to chekc");
+                $.getJSON("/check", function(data) {
+                    console.log("inside check logged in");
+                    console.log(data);
+                    if (!data) {
+                        alert("User is not logged in.");
+                        window.location.href="/login";
+                    }
+                });
+                return true;
+            }
+    
+            var refreshTime = function() {
+                loadPosts();
+                setTimeout(refreshTime, 30000);
+            }
+      $(".feed-container").scroll( function() {
+                    var scrollHeight = $(document).height();
+                    var scrollPos = $(window).height() + $(".feed-container").scrollTop();
+
+                    //TODO: FIX MATH
+                    if ((scrollHeight - scrollPos) / scrollHeight == 0) {
+                        console.log("bottom!");
+                    }
+                });
+                
+
+    var loadProfilePicture = function() {
+      $.getJSON("/check", function(data, err) {
+            console.log("Username is: " + data);
+            if (data) {
+                $.getJSON("/profilePicture/" + data, function(data, err) {
+                    let imageURL = data;
+                    $(".profile-button").css("background-image", "url('" + imageURL + "')");
+                });
+            
+            }
+        })
+    }
+
+    $(document).ready(function(){
+
+      loadPosts();
+      loadProfilePicture();
+
+        $('input[type="file"]').change(function(e){
+          $('.upload-profile').click(function () {
+              console.log(e.target.files[0].size);
+              if ($("#file-upload-profile").val() == ''){
+                alert("Please select a photo.");
+              } else {
+                var reader = new FileReader();
+                var formData = {};
+                reader.readAsDataURL(e.target.files[0]);
+                reader.onload = function () {
+                //console.log(reader.result);//base64encoded string
+                  formData = {
+                      file: reader.result,
+                  };
+                $(".profile-pic").attr('src', reader.result); 
+                console.log(formData);
+                $.post('/uploadProfilePic', formData, function(data){
+                    if (data == "error") {
+                      alert ("Please choose a smaller image.");
+                    }
+                    console.log("inside post");
+                    //console.log(data);
+                });
+              };
+                
+              }
+              $("#file-upload-profile").val('');
+          });
+        });
+        $('.your-wall').click(function () {
+            console.log("inside click");
+            var file = $('#post-file')[0].files[0];
+            if (!file){
+                var name = $('#jumbo-name').text();
+                var initials = name.split(' ')[0][0] + name.split(' ')[1][0];
+                var caption = $("#caption").val();
+                console.log("caption is " + $("#caption").val());
+                loadSinglePost(name, "", name, "text-own", initials, caption, "");
+                var caption = $("#caption").val('');
+                $("#post-file").val('');
+            } else {
+              var reader = new FileReader();
+                var formData = {};
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                  formData = {
+                      file: reader.result,
+                  };
+                  var name = $('#jumbo-name').text();
+                  var initials = name.split(' ')[0][0] + name.split(' ')[1][0];
+                  var caption = $("#caption").val();
+                  console.log("caption is " + $("#caption").val());
+                  console.log(reader.result);
+                  loadSinglePost(name, "", name, "media-own", initials, caption, reader.result);
+                  var caption = $("#caption").val('');
+                  $("#post-file").val('');
+          };
+            }
+            
+          });
+        $('.post-friend').click(function () {
+            console.log("inside click");
+            var file = $('#post-file')[0].files[0];
+            var friend_username = $("input:radio:checked").attr('id');
+            var friend_name = $('label[for="' + friend_username + '"]').html();
+            if (!file){
+                var name = $('#jumbo-name').text();
+                var initials = name.split(' ')[0][0] + name.split(' ')[1][0];
+                var caption = $("#caption").val();
+                console.log("caption is " + $("#caption").val());
+                loadSinglePost(name, friend_username, friend_name, "text-friend", initials, caption, "");
+                var caption = $("#caption").val('');
+                $("#post-file").val('');
+            } else {
+                var reader = new FileReader();
+                var formData = {};
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                  formData = {
+                      file: reader.result,
+                  };
+                  var name = $('#jumbo-name').text();
+                 var initials = name.split(' ')[0][0] + name.split(' ')[1][0];
+                  var caption = $("#caption").val();
+                  console.log("caption is " + $("#caption").val());
+                  console.log(reader.result);
+                  loadSinglePost(name, friend_username, friend_name, "media-friend", initials, caption, reader.result);
+                  var caption = $("#caption").val('');
+                  $("#post-file").val('');
+            }
+                console.log(formData);
+  
+                };
+        });
+
+        $('.upload-profile').click(function () {
+              if ($("#file-upload-profile").val() == ''){
+                alert("Please select a photo.");
+              } 
+
+          });
+          $('.save-changes').click(function () {
+            var topics = [];
+            $("input:checkbox:checked").each(function() {
+                topics.push($(this).next('label').text());
+            });
+
+            var email = $('#modal-email').val();
+            var password = $('#modal-password').val();
+            var affiliation = $('#modal-affiliation').val();
+            
+            var name = $('#jumbo-name').text();
+            var initials = name.split(' ')[0][0] + name.split(' ')[1][0];
+            if (("Affiliation: " + affiliation) != $('#jumbo-affiliation').text() && affiliation != ""){
+              console.log("not equal");
+              console.log($('#jumbo-affiliation').text());
+              loadSinglePost(name, "", name, "status", initials, (name + " is now affiliated with " + affiliation + "."), "");
+            }
+            if ($('#jumbo-topics').text() != topics.join(', ')) {
+              console.log("topics not equal");
+              console.log($('#jumbo-topics').text());
+              console.log(topics.join(', '));
+              loadSinglePost(name, "", name, "status", initials, (name + " is now interested in " + topics.join(', ') + "."), "");
+            }
+            $('#jumbo-topics').text(topics.join(', '));
+            $('#jumbo-affiliation').text("Affiliation: "+ affiliation);
+            var formData = {
+                email: email,
+                password: password,
+                affiliation: affiliation,
+                topics: topics
+              };
+              console.log("about to post");
+              $('#modal-password').val('');
+              $.post('/updateProfile', formData, function(data){
+                    console.log("inside update post");
+                });
+          });
+
+          $(".search-user").on("submit", function(){
+            
+            event.preventDefault();
+            console.log("submitted");
+            var name = $('#search-input').val();
+            $.post('/userList', function(data){
+              if (!data.includes(name)){
+                alert("User not found");
+              }
+            });
+            var formData = {
+              name: name
+            };
+            console.log(formData);
+            $.post('/getUsername', formData, function(data){
+                    console.log("inside update post");
+                    console.log(data);
+                    window.location.href = "/wall/" + data;
+              });
+        });
+    });
+
+      
+      $.post('/userInfo', function(d) {
+            $('#search-input').val('');
+            var data = d.data;
+            console.log(data);
+            var name = data.firstName.S + " " + data.lastName.S;
+            var topics = "";
+            var topicsList = [];
+            for (let i = 0; i < data.topics.L.length; i++){
+                if (i == data.topics.L.length - 1){
+                    topics = topics + data.topics.L[i].S;
+                } else {
+                    topics = topics + data.topics.L[i].S + ", ";
+                }
+                topicsList.push(data.topics.L[i].S);
+                var t = "#" + data.topics.L[i].S.toUpperCase().split(' ').join('');
+                $(t).prop("checked", true );
+            }
+            var birthday = data.birthday.S;
+            var affiliation = data.affiliation.S;
+            var initials = data.firstName.S[0] + data.lastName.S[0];
+            $(".profile-pic").attr('src', d.image);
+            $('#jumbo-name').text(name);
+            $('#jumbo-birthday').text("Birthday: " + birthday);
+            $('#jumbo-affiliation').text("Affiliation: "+ affiliation);
+            $('#jumbo-topics').text(topicsList.join(', '));
+            //$('#navbar-icon').text(initials);
+            $('#modal-email').val(data.email.S);
+            $('#modal-affiliation').val(data.affiliation.S);
+            $('#modal-password').val('');
+            $('.new-post-profile-initials').text(initials);
+      });
+
+      $.post('/friendsInfo', function(data){
+              var d = data;
+              for (var i = 0; i < d.length; i++){
+                var id = d[i].username;
+                var text = d[i].fullname;
+                var element = "<div class='form-check form-check-inline'>" + 
+                  "<input class='form-check-input' type='radio' name='radio-button' id='" + id + "'>" +
+                  "<label class='form-check-label' for='"+ id + "'>" + text + "</label></div>";
+                $( ".friend-list" ).append(element);
+              }
+       });
+  </script>
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" id="navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/home">PennBook</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  
+          <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/newsfeed">Article Search</a>
+          </li>
+        </ul>
+        <form class="d-flex search-user">
+          <input class="form-control me-2 typeahead" id = "search-input" data-provide="typeahead" type="text" placeholder="Search People" aria-label="Search">
+          <button class="btn btn-outline-success search-user-btn" type="submit">Search</button>
+        </form>
+        <ul></ul>
+        <div class="dropdown">
+          <button class="btn btn-circle border border-success profile-button" type="button" id="navbar-icon" data-bs-toggle="dropdown" aria-expanded="false">
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="/wall">Wall</a></li>
+            <li><a class="dropdown-item" href="/visualizer">Visualizer</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <script>
+    $.post('/userList', function(data){
+              console.log(data);
+              var $type = $(".typeahead");
+              $type.typeahead({
+                source: data,
+                autoSelect: true,
+            });
+    });
+      
+  </script>
+  
+
+<div class="jumbotron m-3 position-relative">
+    <div class="row">
+        <div class ="col-4 ">
+            <div class ="row-3">
+            <img class="profile-pic center" width="200" height="40" 
+                src="https://mastodon.sdf.org/system/accounts/avatars/000/108/313/original/035ab20c290d3722.png">
+            <ul></ul>
+            </div>
+            <div class ="row bottom">
+            </div>
+        </div>
+        <div class ="col-4 align-bottom">
+            <h4 class="display-6" id="jumbo-name"></h4>
+            <ul></ul>
+            <p class="lead" id="jumbo-birthday"></p>
+            <p class="lead" id="jumbo-affiliation"></p>
+            <p class = "lead">Interested in: </p>
+            <p class="" id="jumbo-topics"></p>
+        </div>
+        <div class ="col-4">
+            <div class="btn-group-vertical position-absolute bottom-0 end-0">
+              <button type="button" class="btn btn-outline-success btn-sm post-profile" data-bs-toggle="modal" data-bs-target="#profile-pic-modal">Add New Profile Picture</button>
+              <button type="button" class="btn btn-outline-success post-profile btn-sm" data-bs-toggle="modal" data-bs-target="#account-info-modal">Edit Account Info</button>
+        
+          </div>
+        </div>
+    </div>
+    </div>
+    <div class="modal fade" id="profile-pic-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Upload Profile Picture</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>File size must be less than 70kb.</p>
+                <form action="/uploadFile" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <input class="file-upload form-control" type="file" name = "post-pic" id="file-upload-profile" accept="image/png, image/jpeg">
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary upload-profile" data-bs-dismiss="modal">Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="account-info-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Edit Account Information</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                New Email: 
+                <input type="email" class="form-control" id="modal-email" aria-describedby="emailHelp" value = "">
+                <hr>
+                New Password: 
+                <input type="email" class="form-control" id="modal-password" aria-describedby="emailHelp" value = "">
+                <small id="passwordHelp" class="form-text text-muted">We'll never share your password with anyone else.</small>
+                <hr>
+                New Affiliation: 
+                <input type="email" class="form-control" id="modal-affiliation" aria-describedby="emailHelp" value = "">
+                <hr>
+                <h6>New Interests:</h6>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="ARTS" value="option1">
+                    <label class="form-check-label" for="ARTS">ARTS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="ARTSANDCULTURE" value="option2">
+                    <label class="form-check-label" for="ARTSANDCULTURE">ARTS AND CULTURE</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="BLACKVOICES" value="option3" >
+                    <label class="form-check-label" for="BLACKVOICES">BLACK VOICES</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="BUSINESS" value="option1">
+                    <label class="form-check-label" for="BUSINESS">BUSINESS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="COLLEGE" value="option1">
+                    <label class="form-check-label" for="COLLEGE">COLLEGE</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="COMEDY" value="option1">
+                    <label class="form-check-label" for="COMEDY">COMEDY</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="CRIME" value="option1">
+                    <label class="form-check-label" for="CRIME">CRIME</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="EDUCATION" value="option1">
+                    <label class="form-check-label" for="EDUCATION">EDUCATION</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="ENTERTAINMENT" value="option1">
+                    <label class="form-check-label" for="ENTERTAINMENT">ENTERTAINMENT</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="FIFTY" value="option1">
+                    <label class="form-check-label" for="FIFTY">FIFTY</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="FOODANDDRINK" value="option1">
+                    <label class="form-check-label" for="FOODANDDRINK">FOOD AND DRINK</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="GOODNEWS" value="option1">
+                    <label class="form-check-label" for="GOODNEWS">GOOD NEWS </label>
+                  </div>'<div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="GREEN" value="option1">
+                    <label class="form-check-label" for="GREEN">GREEN</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="HEALTHYLIVING" value="option1">
+                    <label class="form-check-label" for="HEALTHYLIVING">HEALTHY LIVING</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="IMPACT" value="option1">
+                    <label class="form-check-label" for="IMPACT">IMPACT</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="LATINOVOICES" value="option1">
+                    <label class="form-check-label" for="LATINOVOICES">LATINO VOICES</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="MEDIA" value="option1">
+                    <label class="form-check-label" for="MEDIA">MEDIA</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="PARENTS" value="option1">
+                    <label class="form-check-label" for="PARENTS">PARENTS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="POLITICS" value="option1">
+                    <label class="form-check-label" for="POLITICS">POLITICS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="QUEERVOICES" value="option1">
+                    <label class="form-check-label" for="QUEERVOICES">QUEER VOICES</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="RELIGION" value="option1">
+                    <label class="form-check-label" for="RELIGION">RELIGION</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="SCIENCE" value="option1">
+                    <label class="form-check-label" for="SCIENCE">SCIENCE</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="SPORTS" value="option1">
+                    <label class="form-check-label" for="SPORTS">SPORTS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="STYLE" value="option1">
+                    <label class="form-check-label" for="STYLE">STYLE</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="TASTE" value="option1">
+                    <label class="form-check-label" for="TASTE">TASTE</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="THEWORLDPOST" value="option1">
+                    <label class="form-check-label" for="THEWORLDPOST">THE WORLDPOST</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="TRAVEL" value="option1">
+                    <label class="form-check-label" for="TRAVEL">TRAVEL</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="WEIRDNEWS" value="option1">
+                    <label class="form-check-label" for="WEIRDNEWS">WEIRD NEWS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="WOMEN" value="option1">
+                    <label class="form-check-label" for="WOMEN">WOMEN</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="WORLDNEWS" value="option1">
+                    <label class="form-check-label" for="WORLDNEWS">WORLD NEWS</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="WORLDPOST" value="option1">
+                    <label class="form-check-label" for="WORLDPOST">WORLDPOST</label>
+                  </div>
+            </div>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary save-changes" data-bs-dismiss="modal">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<div class="post-container new-post fixed" id="newPost">
+  <div class="card">
+      <div class="post-header">
+          <div class="poster-profile">
+              <div class="poster-profile-circle">
+                  <div class="new-post-profile-initials poster-profile-initials"></div>
+              </div>
+          </div>
+          <div class="post-head-text">
+              <div class="post-head-row"></div>
+          </div>
+      </div>
+      <div class="card-body">
+        <textarea class="form-control" id="caption" rows="3" placeholder="Write caption here." val = ""></textarea>
+      </div>
+      
+          <form action="/uploadFile" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <input class="file-upload form-control" type="file" name = "post-pic" id="post-file" accept="image/png, image/jpeg">
+            </div>
+          </form>
+        <div class="post-btn btn-group" role="group" aria-label="Basic outlined example">
+          <button type="button" class="btn btn-outline-success your-wall">Post on Your Wall</button>
+          <button type="button" class="btn btn-outline-success friend-wall" data-bs-toggle="modal" data-bs-target="#friend-post-modal">Post on Friend's Wall</button>
+
+        </div>
+        <div class="modal fade" id="friend-post-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Choose a Friend</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body friend-list">
+                
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary post-friend" data-bs-dismiss="modal">Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+  </div>
+
+  <div class="feed-container">
+    <div class="feed-text"></div>
+    </div>
+</div>    
+</body>
+
+</html>

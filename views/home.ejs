@@ -1,0 +1,926 @@
+<!-- TODO: 
+- Cute pop up with who has liked the post when you click on the number of likes
+- Profile picture / initals of commenter
+- Get links to work (href)
+- Infinite scrolling
+- Figure out how to access profile picture
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home Page</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"> </script>
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.min.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="home.css">
+        <link rel="stylesheet" href="icons.css">
+        <link rel="stylesheet" href="navbar.css">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta charset="UTF-8" />
+          <meta name="viewport" content=
+              "width=device-width, initial-scale=1.0" />
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+        <script type="text/javascript">
+            let postList = [];
+
+            //Map posts to a comment's time stamp
+            let commentMap = new Map();
+
+            let userProfilePictureURL = "";
+
+            //Checks that user is logged in, if not redirects to login page
+            let checkLoggedIn = function() {
+                let username = "";
+                $.getJSON("/check", function(data, err) {
+                    console.log('data');
+                    console.log(data);
+                    alert(data);
+                    username = data;
+                    if (!data) {
+                        alert("User is not logged in.");
+                        window.location.href = "/login";
+                    } else {
+                        console.log('hello');
+                        $(".main-container").attr("id", data);
+                    }
+                })
+
+                $(".main-container").attr("id", username);
+                return true;
+                
+            }
+
+            //Loads current user and updates profile picture
+            let loadUser = function() {
+
+                $.getJSON("/user", function(data, err) {
+                    if (data) {
+                        let name = data;
+                        let initials = name.split(" ")[0][0] + name.split(" ")[1][0];
+                        $(".name").text(name);
+
+                        $.getJSON("/check", function(data, err) {
+                            console.log("Username is: " + data);
+                            if (data) {
+                                $.getJSON("/profilePicture/" + data, function(data, err) {
+                                    let imageURL = data;
+                                    $(".profile-button").css("background-image", "url('" + imageURL + "')");
+                                    userProfilePicture = imageURL;
+                                });
+                            }
+                        })
+                    } else {
+                        alert("AN ERROR OCCURRED");
+                        console.log(err);
+                    }
+                })
+            }
+
+           
+            // Have to do this when $(document.ready)
+            // let chatsContainer = $("#" + id + " .comments-container");
+            // commentsContainer.attr("id", post.post_id.S);
+            let goToChatFunction = function() {
+                $.post("/chat", { chatID: chatName.S });
+            }
+
+            // Loads all of the Chat's by their coloquial name
+            let loadChats = function() {
+                $.getJSON("/chatList", function(data, err) {
+                    const chatContainer = document.getElementById('chat-container');
+                    // get's rid of duplicates
+                    while (chatContainer.firstChild) {
+                        chatContainer.removeChild(chatContainer.firstChild);
+                    }
+                    if (data) {
+                        data.forEach((chatName) => {
+                            // Create a link for each possible chat button
+                            const messData = document.createElement('button');
+                            var arr = {};
+                            arr.testing = chatName.S;
+                            // Gets the chatname from an id
+                            $.getJSON("/chatNameFromID/" + chatName.S, function(data, err) {
+                                messData.innerText = data.chatName;
+                            });
+                            messData.className = 'btn chat-button';
+                            messData.data = chatName.S;
+                            var link = '/chat?chatID=' + chatName.S;
+                            // The bool variable tells us if we want to reload all of the messages (would cause errors because of chat creation delays)
+                            messData.onclick = function(){window.location.href=link + "&bool=false";return false;};
+                            // chatContainer.append(messData);
+                            
+                            const messData2 = document.createElement('button');
+                            messData2.innerText = 'x';
+                            messData2.className = 'btn btn-secondary chat-button find-me';
+                            messData2.onclick = function() {
+                            console.log("Mess:" + messData.innerText);
+                            messData.style.visibility='hidden';
+                            messData2.style.visibility='hidden';
+                            return false;
+                            };
+                            messData2.addEventListener("mouseover", function() {
+                            this.textContent = "Hide";
+                            });
+                            messData2.addEventListener("mouseout", function() {
+                                this.textContent = "x";
+                            })
+                            const holdBoth = document.createElement('div');
+                            holdBoth.appendChild(messData2);
+                            holdBoth.appendChild(messData);
+                            chatContainer.append(holdBoth);
+                        });
+                    } 
+                    if (err) {
+                    }                   
+                })
+            }
+
+            // Allows the user to clear all of the possible chat requests
+            let clearRequests = function() {
+                console.log("Remove the entire chat requests");
+                $.post("/removeChatToUserList", [], function(data) {
+                });
+                // Want to reload the page to see the results immediately
+                setTimeout(function() {
+                    window.location.href='/home';
+                },500)
+            }
+
+            // Loads all of the chat invites
+            let loadChatInvites = function() {
+                $.getJSON("/chatInviteList", function(data, err) {
+                    const chatInviteContainer = document.getElementById('chat-invite-container');
+                    // Removes all of the chat invites (so that there are not duplicates)
+                    while (chatInviteContainer.firstChild) {
+                        chatInviteContainer.removeChild(chatInviteContainer.firstChild);
+                    }
+                    if (data) {
+                        data.forEach((chatName) => {
+                            // Create invite buttons
+                            const messData = document.createElement('button');
+                            messData.innerText = chatName.S;
+                            messData.className = 'btn chat-button';
+                            messData.data = chatName.S;
+                            var link = '/chat?chatID=' + chatName.S;
+                            messData.onclick = function(){
+                                var theArr = {};
+                                theArr.name = chatName.S;
+                                // Add this chat to the list of chats (means that it has been accepted)
+                                $.post("/addToChatList", theArr, function(data) {
+
+                                });
+                                theArr2 = {};
+                                var theList = [];
+                                // Get all of the chats that you are invited to
+                                $.getJSON("/chatInviteList", function(data, err) {
+                                    if(data) {
+                                        // Non inclusive list of chats
+                                        data.forEach((chatN) => {
+                                            if(chatN.S === chatName.S) {
+                                                console.log("Equal");
+                                            } else {
+                                                console.log("Not Equal");
+                                                theList.push(chatN.S);
+                                            }
+                                        });
+                                        setTimeout(function() {
+                                            // Should contain all invitations that were not just clicked
+                                            theArr2.list = theList;
+                                            
+                                            $.post("/removeChatToUserList", theArr2, function(data) {
+                                            });
+                                            setTimeout(function() {
+                                                for (var i = 0; i < theList.length; i++) {
+                                                    var holda = {};
+                                                    holda.element = theList[i];
+                                                    holda.element2 = 'rsetty';
+                                                    // rsetty is not actually used (purely testing)
+                                                    $.post('/addChatToRequestList', holda, function(dd) {
+                                                        
+                                                    })
+                                                    holda = {};
+                                                }
+                                                setTimeout(function() {
+                                                    window.location.href=link;
+                                                    return false;
+                                                }, 1000)
+                                            }, 500);
+                                        }, 500);
+                                    }
+                                });
+                            };
+                            chatInviteContainer.append(messData);
+                        });
+                    }                
+                })
+            }
+
+            //Loads posts that user sees
+            var loadPosts = function() {
+                let feedContainer = $(".feed-container");
+                let currentPostList = [];
+
+                $.getJSON("/posts", function(data) {
+                    if (data) {
+                        data.forEach((post) => {
+                            currentPostList.push(post.post_id);
+
+                            if (!postList.includes(post.post_id)) {
+                                let poster = post.creator_username;
+                                let poster_name = post.creator_name;
+                                let type = post.type;
+                                let postID = post.post_id;
+                                let initials = (poster_name.split(" ")[0]).charAt(0) + poster_name.split(" ")[1].charAt(0);
+                                postList.push(postID);
+
+                                let time_text = getFormattedTime(post.time);
+
+                                addHTML(feedContainer, postID, post.media); 
+
+                                let postContainer = $("#" + postID + " .post-container");
+
+                                //Handling text of post header
+                                let header = $("#" + postID + " .post-head-text");
+                                if (type == "text-own" || type == "media-own") {
+                                    header.text(poster_name);
+                                } else if(type == "status") {
+                                    header.text(poster_name + " has a new status update.");
+                                } 
+                                else if (type == "friend") {
+                                    header.text(poster_name + " is now friends with " + post.friend_name.S + ".");
+                                } else if (type == "text-friend" || type == "media-friend") {
+                                    $("#" + postID + " .post-head-row").append(
+                                        poster_name +
+                                        " <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-caret-right-fill' viewBox='0 0 16 16'> "
+                                        + "<path d='m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z'/>"
+                                        + "</svg>"
+                                        + post.wall_name
+                                    )
+                                }
+
+                                $("#" + postID + " .poster-profile-initials").text(initials);
+                                $("#" + postID + " .card-text").text(post.text);
+                                $("#" + postID + " .time").text(time_text);
+                                $("#" + postID + " .comment-button").attr("id", postID);
+                                $("#" + postID + " .like-button").attr("id", postID);
+                                $("#" + postID + " .comment-input").attr("id", postID);
+
+                                let commentsContainer = $("#" + postID + " .comments-container");
+                                $("#" + postID + " .card").attr("id", postID);
+
+                                //Link to poster's wall
+                                $("#" + postID + " a.poster-profile").attr("href", "/wall/" + poster);
+                                $("a.poster-profile").css("color", "black");
+
+                                getLikesAndComments(postID);
+                                addButtonListeners(postID);
+                            }
+                        })
+                    } 
+
+                    postList.forEach(pid => {
+                        //delete posts that weren't included in the most recent get posts call
+                        if (!currentPostList.includes(pid)) {
+                            $("#" + pid + ".post-container").remove();
+                        }
+                    });
+
+                });
+            }
+
+            addWelcomePost = function() {
+                $(".feed-container").append(
+                    "<div class='post-container'>" 
+                        + "<div class='card'>" 
+                            + "<div class='card-body'>" 
+                                + "<div class='card-text'>Welcome to PennBook!</div>" 
+                            + "</div>" 
+                        + "</div>" 
+                    + "</div>"
+                )
+            }
+
+            //Helper method for formatting the time of posts
+            var getFormattedTime = function(t) {
+                let date = new Date(t);
+                let elapsed_time = Date.now() - date;
+                let time_text = "0";
+
+                if (elapsed_time < 86400000) {
+                    let hours = Math.floor((elapsed_time / 1000) / 3600);
+                    let minutes = Math.floor((elapsed_time / 1000) / 60);
+                    if (hours > 0) {
+                        time_text = hours.toString() + "h ago"
+                    } else {
+                        time_text = minutes.toString() + "min ago"
+                    }
+                } else {
+                    let month = date.getMonth();
+                    let day = date.getDate();
+                    let year = date.getFullYear();
+                    let hour = date.getHours();
+                    let min = date.getMinutes();
+                    if (year != new Date(Date.now()).getFullYear()) {
+                        time_text = month + "/" + day + "/" + year;
+                    } else {
+                        if (parseInt(min) < 10) {
+                            min = "0" + min;
+                        }
+                        time_text = month + "/" + day + " " + hour + ":" + min;
+                    }
+                }
+                return time_text;
+            }
+
+            //Adds HTML for each post to show up in the feed container
+            var addHTML = function(element, postID, media) {
+                element.prepend(
+                    "<div class='post-container' id='" + postID + "'>" 
+                        + "<div class='card'>" 
+                            + "<div class='post-header'>" 
+                                + "<div class='poster-profile'>" 
+                                    + "<a class='poster-profile'>"
+                                        + "<div class='poster-profile-circle'>" 
+                                            + "<div class='poster-profile-initials'></div>" 
+                                        + "</div>" 
+                                    + "</a>"
+                                + "</div>" 
+                                + "<div class='post-head-text'>" 
+                                    + "<div class='post-head-row'></div>" 
+                                + "</div>" 
+                                + "<div class='time'>Time</div>" 
+                            + "</div>" 
+                            + "<div class='card-body'>" 
+                                + "<img id = 'postimg" + postID + "' src = '" + media + "' class='center'>" 
+                                + "<div class='card-text'></div>" 
+                            + "</div>" 
+                            + "<ul class='list-group list-group-flush'>" 
+                                + "<li class='list-group-item'>" 
+                                    + "<div class='post-info'>" 
+                                        + "<div class='likes'>" 
+                                            + "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-hand-thumbs-up icon' viewBox='0 0 16 16'>" 
+                                                + "<path d='M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z'/>" 
+                                            + "</svg>" 
+                                            + "<div class='num-likes'>Likes</div>" 
+                                        + "</div>" 
+                                        + "<div class='comments'>" 
+                                            + "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chat-right icon' viewBox='0 0 16 16'>" 
+                                                + "<path d='M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z'/>" 
+                                            + "</svg>" 
+                                            + "<div class='num-comments'>Comments" + 
+                                        + "</div></div>" 
+                                    + "</div></div></div>" 
+                                    + "<div class='engagement-buttons'>" 
+                                        + "<button class='btn like-button'>Like</button>" 
+                                        + "<button class='btn comment-button focus-comment'>Comment</button>" 
+                                    + "</div>" 
+                                + "</li>" 
+                                + "<li class='list-group-item'>" 
+                                    + "Comments" 
+                                    + "<div class='comments-container'></div>" 
+                                    + "<div class='comment-input-container'>" 
+                                        + "<input type='text' class='form-control comment-input' placeholder='Write a comment...'>" 
+                                        + "<button class='btn comment-button post-comment'>Comment</button>" 
+                                    + "</div>" 
+                                + "</li>" 
+                            + "</ul>" 
+                        + "</div>" 
+                    + "</div>"
+                );
+            }
+
+            //Adding button listeners for like and comment buttons
+            var addButtonListeners = function(postID) {
+                $("#" + postID + " .focus-comment").click(function() {
+                    let postID = this.id;
+                    $("#" + postID + " .comment-input").focus();
+                })
+
+                $("#" + postID + " .post-comment").click(function() {
+                    let d = new Date();
+                    let t = d.toISOString();
+                    let text = $(this).prev().val();
+                    let id = this.id;
+
+                    if (text) {
+                        $.post("/comment", {
+                            post_id: id,
+                            time: t, 
+                            text: text
+                        }, function(data, textStatus, jqXHR) {
+                            let name = data;
+                            $.getJSON("/check", function(data, err) {
+                                if (data) {
+                                    $.getJSON("/profilePicture/" + data, function(data, err) {
+                                        let imageURL = data;
+                                        $("#" + id + " .comments-container").append(
+                                            "<div class='comment' id='" + t + "'>"
+                                            + "<div class='commenter-profile'>" 
+                                                + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                            + "</div>"
+                                            + "<div class='comment-body'>"
+                                            + "<div class='commenter'>" + name + " " + getFormattedTime(t) + "</div>"
+                                            + "<div class='comment-text'>" + text + "</div>"
+                                            + "</div>"
+                                            + "</div>"
+                                        );
+
+                                        let currentCount = $("#" + postID + " .num-comments").text().split(" ");
+                                        let newCount = (parseInt(currentCount) + 1).toString();
+                                        let newText = newCount + " Comments";
+                                        $("#" + postID + " .num-comments").text(newText);   
+
+                                        $("#" + id + " .comments-container").focus();
+                                    });
+                                }
+                            });
+                        });
+
+                        $(this).prev().val("");
+                        let cList = commentMap.get(id);
+                        cList.push(t);
+                    } else {
+                        alert("Invalid input for comment.");
+                    }
+                })
+
+                $("#" + postID + " .like-button").click(function() {
+                    let postID = this.id;
+                    $.post("/like", { post_id: this.id, table: "likes" }, function(data, textStatus, jqXHR) {
+                        let prev = $("#" + postID + " .num-likes").text();
+                        let numLikes = parseInt(prev.split(" ")[0]);
+                        if (data == "deleted") {
+                            numLikes--;
+                            $("#" + postID + " .like-button").css("background-color", "white");
+                        } else {
+                            numLikes++;
+                            $("#" + postID + " .like-button").css("background-color", "#1DB954");
+                        }
+
+                        let newText = numLikes.toString() + " Likes";
+                        if (numLikes == 1) {
+                            let newText = numLikes.toString() + " Like";                                
+                        }
+                        $("#" + postID + " .num-likes").text(newText);
+                    })
+                })
+            }
+
+            //AJAX calls for number of likes and comments per post
+            var getLikesAndComments = function(postID) {
+                //DISPLAYING COMMENTS
+                let commentsContainer = $("#" + postID + " .comments-container");
+                $.getJSON("/comments/" + postID, function(data, err) {
+                    if (data) {
+                        if (data.length == 1) {
+                            $("#" + postID + " .num-comments").text("1 Comment");    
+                        } else {
+                            $("#" + postID + " .num-comments").text(data.length + " Comments");
+                        }
+
+                        let cList = [];
+                        data.forEach((comment) => {
+                            //Retrieving profile picture of commenter
+                            $.getJSON("/profilePicture/" + comment.commenter_username, function(data, err) {
+                                let imageURL = data;
+                                commentsContainer.append(
+                                    "<div class='comment' id='" + comment.time + "'>"
+                                    + "<div class='commenter-profile'>" 
+                                        + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                    + "</div>"
+                                    + "<div class='comment-body'>"
+                                    + "<div class='commenter'>" 
+                                        + "<a class='commenter' href='/wall/" + comment.commenter_username + "'>"
+                                        + comment.commenter_name 
+                                        + "</a>"
+                                        + "   " + getFormattedTime(comment.time) 
+                                    + "</div>"
+                                    + "<div class='comment-text'>" + comment.text + "</div>"
+                                    + "</div>"
+                                    + "</div>"
+                                );
+                                cList.push(comment.time);
+                            });
+                        })
+                        commentMap.set(postID, cList);
+                    } else {
+                        $("#" + postID + " .num-comments").text("0 Comments");
+                    }
+                })
+
+                //DISPLAYING LIKES
+                $.getJSON("/likes/likes/" + postID, function(data, err) {
+                    if (data.likes) {
+                        if (data.likes.length == 1) {
+                            $("#" + postID + " .num-likes").text("1 Like");
+                        } else {
+                            $("#" + postID + " .num-likes").text(data.likes.length + " Likes");
+                        }
+                    } else {
+                        $("#" + postID + " .num-likes").text("0 Likes");
+                    }
+
+                    if (data.liked) {
+                        $("#" + postID + " .like-button").css("background-color", "#1DB954");
+                    }
+                });
+            }
+
+            //Loads friend requests
+            var loadRequests = function() {
+                $.getJSON("/requests", function(data) {
+                    if (data) {
+                        let requestContainer = $(".friend-request-container");
+                        data.forEach((request) => {
+                            requestContainer.append("<div class='friend-request' id ='" + request.username + "'>" 
+                                + "<div class='requester-name'>" + request.name + "</div>" 
+                                + "<div class='friend-request-buttons-container'>"
+                                + "<button class='btn confirm-button' id ='" + request.username + "'>Confirm</button>"
+                                + "<button class='btn ignore-button' id ='" + request.username + "'>Ignore</button>"
+                                + "</div></div>"
+                            )
+                        })
+                    }
+
+                    $(".confirm-button").click(function() {
+                        let friendUsername = this.id;
+                        $.post("/accept-request", { friend: friendUsername }, function(data) {
+                            if (data == "done") {
+                                $("#" + friendUsername + ".friend-request").remove();
+
+                                //TODO: ADD NEW FRIEND INTO NEW FRIENDS SECTION
+                            }
+                        })
+                    })
+
+                    $(".ignore-button").click(function() {
+                        let friendUsername = this.id;
+                        $.post("/delete-request", { friend: friendUsername }, function(data) {
+                            if (data == "done") {
+                                $("#" + friendUsername + ".friend-request").remove();
+                            }
+                        })
+                    })
+                })
+            }
+
+            //Loads comments 
+            var loadComments = function() {
+                //Get all comments, check for any that are not in commentMap
+                //Check for comments in commentMap that are not in current comment list
+                postList.forEach(postID => {
+                    $.getJSON("/comments/" + postID, function(data, err) {
+                        if (data) {
+                            let currentCount = $("#" + postID + " .num-comments").text().split(" ");
+                            if (data.length != currentCount.toString()) {
+                                if (data.length == 1) {
+                                    $("#" + postID + " .num-comments").text("1 Comment");    
+                                } else {
+                                    $("#" + postID + " .num-comments").text(data.length + " Comments");
+                                }
+                            }
+                            
+                            let prevCList = commentMap.get(postID);
+                            let newCList = [];
+                            data.forEach(comment => {
+                                if (!prevCList.includes(comment.time)) {
+
+                                    //Retrieving profile picture of commenter
+                                    $.getJSON("/profilePicture/" + comment.commenter_username, function(data, err) {
+                                        let imageURL = data;
+                                        $("#" + id + " .comments-container").append(
+                                            "<div class='comment' id='" + comment.time + "'>"
+                                            + "<div class='commenter-profile'>"
+                                                + "<img class='commenter-profile' src='" + imageURL + "'>" 
+                                            + "</div>"
+                                            + "<div class='comment-body'>"
+                                            + "<div class='commenter'>" + comment.commenter_name + "</div>"
+                                            + "<div class='comment-text'>" + comment.text + "</div>"
+                                            + "</div>"
+                                            + "</div>"
+                                        );
+                                    });
+                                }
+                                newCList.push(comment.time);
+                            })
+
+                            prevCList.forEach(t => {
+                                if (!newCList.includes(t)) {
+                                    document.getElementById(t).remove();
+                                }
+                            })
+
+                            commentMap.set(postID, newCList);
+                        } else {
+                            $("#" + postID + " .num-comments").text("0 Comments");
+                            let prevCList = commentMap.get(postID);
+                            prevCList.forEach(t => {
+                                document.getElementById(t).remove();
+                            })
+                        }
+                    })
+                })
+                    
+            }
+
+            //Loads new friends made in the last 3 days
+            var loadNewFriends = function() {
+                $.getJSON("/getNewFriends", function(data, err) {
+                    if (data) {
+                        data.forEach(friend => {
+                            if (friend) {
+                                $(".new-friends-container").append(
+                                    "<a href=/wall/" + friend.friend2 + " class='new-friend'> "+ friend.friend2_name + " </a>"
+                                );
+                            }
+                        })
+                    }
+                })
+            }
+
+            //Gets article recommendation
+            var loadArticlePosts = function(newArticle) {
+                $.getJSON("/getArticles/" + newArticle, function(article, err) {
+                    if (article) {
+                        console.log("ARTICLE");
+                        console.log(article);
+                        // data.forEach(article => {
+                            $(".feed-container").prepend(
+                                "<div class='post-container' id='a" + article.article_id + "'>" 
+                                    + "<div class='card'>" 
+                                        + "<div class='post-header'>" 
+                                            + "<div class='poster-profile'>" 
+                                                + "<a class='poster-profile'>"
+                                                + "</a>"
+                                            + "</div>" 
+                                            + "<div class='post-head-text'>" 
+                                                + "<a href = '" + article.link + "'> "
+                                                    + article.headline
+                                                +"</a>"
+                                            + "</div>" 
+                                            + "<div class='time'>" 
+                                                + article.published_date 
+                                            + "</div>" 
+                                        + "</div>" 
+                                        + "<div class='card-body'>" 
+                                            + "<div class='card-text'>" 
+                                            + article.short_description
+                                            + "</div>" 
+                                        + "</div>" 
+                                        + "<ul class='list-group list-group-flush'>" 
+                                            + "<li class='list-group-item'>" 
+                                                + "<div class='post-info'>" 
+                                                    + "<div class='likes'>" 
+                                                        + "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-hand-thumbs-up icon' viewBox='0 0 16 16'>" 
+                                                            + "<path d='M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z'/>" 
+                                                        + "</svg>" 
+                                                        + "<div class='num-likes' id='a" + article.article_id + "'>Likes</div>" 
+                                                    + "</div>" 
+                                                + "</div>" 
+                                                + "<div class='engagement-buttons'>" 
+                                                    + "<button class='btn like-button' id='a" + article.article_id + "'>Like</button>" 
+                                                + "</div>" 
+                                            + "</li>"  
+                                        + "</ul>" 
+                                    + "</div>" 
+                                + "</div>"
+                            );
+
+                            loadArticleLikes(article.article_id)
+                        // })
+                    }
+                })
+            }
+
+            var loadArticleLikes = function(articleID) {
+                //DISPLAYING LIKES
+                $.getJSON("/likes/article_likes/" + articleID, function(data, err) {
+                    if (data.likes) {
+                        if (data.likes.length == 1) {
+                            $("#a" + articleID + " .num-likes").text("1 Like");
+                        } else {
+                            $("#a" + articleID + " .num-likes").text(data.likes.length + " Likes");
+                        }
+                    } else {
+                        $("#a" + articleID + " .num-likes").text("0 Likes");
+                    }
+
+                    if (data.liked) {
+                        $("#a" + articleID + " .like-button").css("background-color", "#1DB954");
+                    }
+                });
+
+                $("#a" + articleID + ".like-button").click(function() {
+
+                    $.post("/like", { post_id: articleID, table: "article_likes" }, function(data, textStatus, jqXHR) {
+                        let prev = $("#a" + articleID + " .num-likes").text();
+                        let numLikes = parseInt(prev.split(" ")[0]);
+                        if (data == "deleted") {
+                            numLikes--;
+                            $("#a" + articleID + " .like-button").css("background-color", "white");
+                        } else {
+                            numLikes++;
+                            $("#a" + articleID + " .like-button").css("background-color", "#1DB954");
+                        }
+
+                        let newText = numLikes.toString() + " Likes";
+                        if (numLikes == 1) {
+                            let newText = numLikes.toString() + " Like";                                
+                        }
+                        $("#a" + articleID + " .num-likes").text(newText);
+                    })
+                })
+            }
+
+ 
+            // Method to create a chat from the main page (similar method in chat.ejs)
+            function createChat() {
+                var name = prompt("Please enter the GroupChat Name","");
+                if (name != null && name != undefined && name != "") {
+                    const holder = Math.round(Date.now() / 1000);
+                    var holder2;
+                    var theLink;
+                    var tester;
+                    // Get the individual who is currently logged in on the session
+                    $.getJSON("/getCurrentUsername", function(data3, err) {
+                        holder2 = data3 + holder;
+                    });
+                    setTimeout(function() {
+                        $.post("/chatDataHelper", holder2, function(data) {
+                    
+                        }, "json");
+                        theLink = '/chat?chatID=' + holder2;
+                        // setTimeout waits for the previous chat request to go through (better option would have been Promises)
+                        setTimeout(function() {
+                            var theArr = {};
+                            theArr.name = holder2; 
+                            theArr.chatName = name;
+                            $.post("/createChat", theArr, function(data2) {
+                            }, "json");
+                            setTimeout(function() {
+                                $.post("/addToChatList", theArr, function(d) {
+
+                                });
+                                setTimeout(function(dd) {
+                                    var theLink2 = theLink + "&bool=true";
+                                    window.location.href=theLink2;
+                                }, 1000);
+                            }, 500);
+                        }, 500);
+                    }, 500);
+                }
+            }
+
+            // Method called when a chat invitation is clicked on
+            function acceptChatInvite(input) {
+                var theArr = {};
+                theArr.name = name;
+                $.post("/addToChatList", theArr, function(data) {
+
+                });
+                // bool = true means that the old chat messages are NOT included
+                window.location.href = '/chat?chatID=' + name + '&bool=true';
+            }
+
+            //refreshing posts every minute
+            var refreshTime = function() {
+                loadPosts();
+                loadComments();
+                loadChats();
+                loadChatInvites();
+                setTimeout(refreshTime, 30000)
+            }
+
+            var everyHour = function() {
+                loadArticlePosts("true");
+                setTimeout(everyHour, 3600000)
+            }
+
+            // JQuery call that happens every time that the page is loaded
+            $(document).ready(function () {
+                setTimeout(refreshTime, 30000);
+                loadUser();
+                loadPosts();
+                loadComments();
+                loadRequests();
+                loadChats();
+                loadChatInvites();
+                loadNewFriends();
+                loadArticlePosts("false");
+                setTimeout(everyHour, 3600000)
+
+                $(".feed-container").scroll( function() {
+                    var scrollHeight = $(document).height();
+                    var scrollPos = $(window).height() + $(".feed-container").scrollTop();
+
+                    //TODO: FIX MATH
+                    if ((scrollHeight - scrollPos) / scrollHeight == 0) {
+                        console.log("bottom!");
+                    }
+                });
+
+                $(".search-user").on("submit", function(){
+                    event.preventDefault();
+                    console.log("submitted");
+                    var name = $('#search-input').val();
+                    $.post('/userList', function(data){
+                    if (!data.includes(name)){
+                        alert("User not found");
+                    }
+                    });
+                    var formData = {
+                    name: name
+                    };
+                    console.log(formData);
+                    $.post('/getUsername', formData, function(data){
+                            console.log("inside update post");
+                            console.log(data);
+                            window.location.href = "/wall/" + data;
+                    }).fail(function() {
+                            alert( "AJAX Call Failed" );
+                    });
+                });
+
+            })
+        </script>
+
+    </head>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+        <div class="home-page-steph">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" id="navbar">
+                <div class="container-fluid">
+                  <a class="navbar-brand" href="/home">PennBook</a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" onclick="createChat()">Chat</a>
+                        </li>
+                      <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="/newsfeed">Article Search</a>
+                      </li>
+                    </ul>
+                    <form class="d-flex search-user">
+                      <input class="form-control me-2 typeahead" id = "search-input" data-provide="typeahead" type="text" placeholder="Search People" aria-label="Search">
+                      <button class="btn btn-outline-success search-user-btn" type="submit">Search</button>
+                    </form>
+                    <ul></ul>
+                    <div class="dropdown">
+                      <button class="btn btn-circle border border-success profile-button" type="button" id="navbar-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="/wall">Wall</a></li>
+                        <li><a class="dropdown-item" href="/visualizer">Visualizer</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+            <script>
+                $.post('/userList', function(data){
+                          console.log(data);
+                          var $type = $(".typeahead");
+                          $type.typeahead({
+                            source: data,
+                            autoSelect: true,
+                        });
+                });
+              </script>
+
+            <!-- FEED -->
+            <div class="main-container">
+                <div class="feed-text">Feed</div>
+                <div class="feed-container"></div>    
+            </div>
+            
+
+            <div class="right-sidebar">
+                <div class="friend-request-container card">
+                    <div class="right-sidebar-title">Friend Requests</div>
+                </div>
+                <div class="new-friends-container card">
+                    <div class="right-sidebar-title">New Friends</div>
+                </div>
+                <div class="chat-container">
+                    <div class="right-sidebar-title">Chats</div>
+                    <button class="btn new-chat-button" onclick="createChat()">New Chat</button>
+                    <div class="right-sidebar-title">Current Chats</div>
+                    <div class="chats-container" id="chat-container"></div>
+                    <div class="right-sidebar-title">Chat Invitations</div>
+                    <button class="btn clear-button" onclick="clearRequests()">Clear Invitations</button>
+                    <div class="chats-invite-container" id="chat-invite-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

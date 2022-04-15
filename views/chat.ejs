@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type = "text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.min.js" type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>      
+    <style>
+
+
+/* This is the style for all of the Chat Part of the Application */
+.chat-app .box-for-chat {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.box-for-chat .database-chat-calls ul li {
+    list-style: none;
+    margin-bottom: 30px
+}
+
+.box-for-chat .database-chat-calls .message {
+    border-radius: 10px;
+    border-color: #4daa7c;
+    display: inline-block;
+}
+
+.box-for-chat .database-chat-calls .message-data {
+    margin-bottom: 5px
+}
+
+.box-for-chat .database-chat-calls .message {
+    color: rgb(12, 56, 6);
+    font-weight: 100;
+    padding: 5px 25px 5px 25px;
+    position: relative
+}
+
+body{
+    background-color: #9ae4a4;
+    margin-top:40px;
+    margin-left:50px;
+    margin-right:50px;
+}
+.card {
+    transition: .75s;
+    border: 7px;
+    margin-bottom: 50px;
+    margin-left: 15px;
+    margin-right: 15px;
+    background: rgb(238, 252, 237);
+}
+
+.user-sent-message {
+    float: right;
+    padding: 10px, 20px;
+}
+
+.holdForm {
+    padding: 10px 40% 10px 35%;
+}
+
+.button_leave_holder {
+    padding: 10px;
+    float: right;
+    width: 125px;
+}
+
+.box-for-chat .database-chat-calls .user-sent-this-message {
+    background: #75d47a;
+}
+
+.box-for-chat .database-chat-calls .my-message {
+    background: #ceeccd
+}
+
+.want_to_add {
+    padding: 5px;
+}
+
+.choose_friend {
+    padding: 5px;
+}
+    </style>
+</head>
+
+
+<h1 id="first-chat-name">(Chat Name)</h2>
+<div class="row clearfix">
+        <div class="card chat-app">
+            <div class="button_leave_holder">
+                <button onclick="leaveWindow()">Back</button>
+            </div>           
+            <div class="box-for-chat">
+                <div class="database-chat-calls">
+                    <ul>
+                        <div id="first-hold-to-send"></div>
+                    </ul>
+                </div>
+                <form id="first-send-message" class="holdForm ">
+                    <input type="text" id="first-message">
+                    <button type="submit" id="first-message-button" class="btn btn-success">
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    <div class="choose_friend" id="first-list-friends" style="visibility:hidden">Choose a friend</div>
+    <div class="want_to_add" id="chat-options-container" style="visibility:hidden">Do you want to add user to this chat or create a new one?</div>
+    <button id="first-button-toInvite" onclick="inviteFriend()">Invite Friend</button>
+    <div id="first-hold-to-send"></div>
+</div>
+
+<script>
+        var socket = io();     
+        $.getJSON('/getCurrentUsername', function(data, err) {
+              socket.emit('person-joined-the-chat', data);
+        });
+
+        socket.on('joined-recieved', newUser => {
+            addMessage('',newUser + 'joined','', false);
+        })
+
+        // Message is Recieved
+        socket.on('message', data => {
+            var qs = window.location.search;
+            var up = new URLSearchParams(qs);
+            var product3 = up.get('chatID');
+            if (product3 === data.chatid) {
+                addMessage(data.name, data.message, data.mm, false);
+                console.log("ChatID: " + data.chatid);
+            } else {
+                console.log("Not this chat");
+            }
+        })
+
+        // Containers for html to be put inside of
+        const input = document.getElementById('first-message');
+        const form = document.getElementById('first-send-message');
+
+        // Submit button for a message
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+                $.getJSON('/getTime', function(data2, err2) {
+                setTimeout(function() {
+                    const qstr = window.location.search;
+                    const upams = new URLSearchParams(qstr);
+                    const product = upams.get('chatID');
+                    var date = data2;
+                    const mess = input.value;
+                    // Gets the current user who is logged in
+                    $.getJSON('/getCurrentUsername', function(data, err) {
+                        // Sends the message to the backend to be distributed
+                        socket.emit('send-message-backend', {mess:mess, date: date, username: data, chatID: product});
+                        setTimeout(function() {
+                            var arr = {};
+                            var holder = {};
+                            holder.message = mess;
+                            holder.username = data;
+                            holder.time = date;
+                            arr.message = JSON.stringify(holder);
+                            arr.chatName = product;
+                            $.post('/addChatMessage', arr,  function(data) {
+                            }, "json");
+                        }, 300);
+                    });
+                    input.value = '';
+                    var wholeMess = "You: " + mess;
+                    addMessage('You', mess, date, true);
+                        return false;
+                    }, 300);
+                });
+        })
+
+    // Holds all of the friends
+    var listFriends = [];
+    var testing = '';
+
+    // Loads all of the users who are in the chat
+    let loadUsers = function(holdID) {
+        const userListContainer = document.getElementById('container-for-users');
+        var arr = {};
+        arr.testing = holdID;
+        // Sends the groupchat name
+        $.post("/chatDataHelper", arr, function(data) {
+
+        }, "json");
+        // Creates all of the HTML needed to crease the list of users
+        $.get("/getChatUsers", 'bozo', function(data)  {
+            for (var i = 0; i < data.messages.length; i++) {
+                var member = data.messages[i].S;
+                const userData = document.createElement('li');
+                userData.className = "clearfix theList";
+                const toBeAdded = document.createElement('div');
+                toBeAdded.className = "about name";
+                toBeAdded.innerText = data.messages[i].S;
+                userData.appendChild(toBeAdded);
+                userListContainer.append(userData);
+            }
+        }, "json");
+    }
+
+    // Global Variable that holds that chatID (only used as a backup for failed GET requests)
+    var globalChatID = '';
+
+    // Loads all of the messages from the database
+    let loadMessages = function(holdID) {
+        var arr = {};
+        arr.testing = holdID;
+        // Gets all of the Chat Data
+        $.getJSON("/getChat/" + holdID, 'bozo', function(data)  {
+            for (var i = 0; i < data.messages.length; i++) {
+                var actual = JSON.parse(data.messages[i].S);
+                var actual2 = JSON.parse(actual);
+                var messvalue = actual2.message;
+                var messName = actual2.username;
+                var messTime = actual2.time;
+                addMessage(messName, messvalue, messTime, false);
+            }
+        });
+    }
+
+    // Called from websocket when we want to add a message
+    // Mine indicates a boolean (true if I sent it, false otherwise)
+    function addMessage(sender, mess,time,  mine) {
+        const container = document.getElementById('first-hold-to-send');
+        if (!mine) {
+            const clearfix = document.createElement('li');
+            clearfix.className = "clearfix";
+            const messData = document.createElement('div');
+            messData.className = "message-data";
+            const mess_time = document.createElement('span');
+            mess_time.className = "message-data-time";
+            mess_time.innerText = "";
+            if (time != "") {
+                mess_time.innerText = sender + "  (" + time + ")";
+            }
+            const message1 = document.createElement('div');
+            message1.className = "message my-message";
+            message1.innerText = mess;
+            clearfix.appendChild(messData);
+            messData.appendChild(mess_time);
+            clearfix.appendChild(message1);
+            container.append(clearfix);
+        } else {
+            const clearfix = document.createElement('li');
+            clearfix.className = "clearfix";
+            const messData = document.createElement('div');
+            messData.className = "message-data text-right";
+            const mess_time = document.createElement('span');
+            mess_time.className = "message-data-time";
+            mess_time.innerText = "";
+            if (time!="") {
+                mess_time.innerText = sender + "  (" + time + ")";;
+            }
+            const message1 = document.createElement('div');
+            message1.className = "message user-sent-this-message user-sent-message";
+            message1.innerText = mess;
+            clearfix.appendChild(messData);
+            messData.appendChild(mess_time);
+            clearfix.appendChild(message1);
+            container.append(clearfix);
+        }
+    }
+
+    // called to leave the window without actually leaving the chat
+    function leaveWindow() {
+        window.location.href = '/home';
+    }
+
+    // This was never used due to errors
+    function leaveChat() {
+        var arr = {};
+        arr.testing = globalChatID;
+        // Remove the chat from the users list of chats
+        $.post("/removeChatFromUser", arr, function(data) {
+
+        }, "json");
+        setTimeout(function() {
+            websocket.emit('person-left', "A user");
+            window.location.href = '/home';
+        },500);
+    }
+
+    // This code is run everytime that a user comes into this page
+    $(document).ready(function () {
+        // This makes sure to only load the chat when appropriate
+        const queryString1 = window.location.search;
+        const urlParams1 = new URLSearchParams(queryString1);
+        const product1 = urlParams1.get('chatID');
+        const isNew = urlParams1.get('bool');
+        if (isNew == "false") {
+            loadMessages(product1);
+        }
+        // loadUsers(product1);
+        addMessage('','You Joined','', true);
+        $.getJSON("/chatNameFromID/" + product1, function(data, err) {
+            document.getElementById('first-chat-name').innerHTML = data.chatName;
+        });
+    })
+
+    // Code that gets run when inviting a friend to join the given chat
+    function inviteFriend() {
+        if (document.getElementById('first-list-friends').style.visibility != 'visible') {
+            $.getJSON("/getFriends", function(data, err) {
+                if(data) {
+                    console.log("data!!");
+                    console.log(data);
+                    var listFriends = [];
+                    data.forEach((comment) => {
+                        listFriends.push(comment.friend2);
+                    })
+                    const listFriendsContainer = document.getElementById('first-list-friends');
+                    listFriends.forEach(function(friend) {
+                        const qString = window.location.search;
+                        const urlP = new URLSearchParams(qString);
+                        var product = urlP.get('chatID');
+                        const friendElm = document.createElement('button');
+                        friendElm.onclick = function(){hideFriendOptions(friend, product);return false;};
+                        friendElm.setAttribute("class", "friendsToInvite");
+                        friendElm.innerText = friend;
+                        listFriendsContainer.append(friendElm);
+                        console.log("This is the friend: " + friend);
+                    });
+                    document.getElementById('first-list-friends').style.visibility = 'visible';
+                }
+            });
+        }
+    }
+
+    // Helper function for inviting a friend to join the chat
+    function hideFriendOptions(friend, product) {
+        inviteUser(friend, product);
+        document.getElementById('first-list-friends').style.visibility = 'hidden';
+        var elements = document.getElementById('first-list-friends').getElementsByClassName("friendsToInvite");
+        console.log(elements);
+        for (var i = elements.length - 1; i >=0; i--) {
+            elements[i].remove();
+        }
+    }
+
+    // Helper function for inviting a friend to join the chat
+    function inviteUser(friend, product) {
+        console.log("THE FRIEND: " + friend);
+        var holda = {};
+        holda.element = product;
+        holda.element2 = friend;
+        $.post('/addChatToRequestList', holda, function(dd) {
+                                                            
+        })
+        const chatOptionsContainer = document.getElementById('chat-options-container');            
+        const friendElm = document.createElement('button');
+        friendElm.setAttribute("onclick", "inivteThisChat()");
+        friendElm.setAttribute("class", "chooseAddToThisChat");
+        friendElm.innerText = "Keep Chat";
+        chatOptionsContainer.append(friendElm);
+
+        const friendElm2 = document.createElement('button');
+        friendElm2.setAttribute("onclick", "inivteThisChat2()");
+        friendElm2.setAttribute("class", "chooseAddToThisChat");
+        friendElm2.innerText = "Create New Chat";
+        chatOptionsContainer.append(friendElm2);
+        document.getElementById('chat-options-container').style.visibility = 'visible';
+    }
+
+    // Helper function for inviting a friend to join the chat
+    function inivteThisChat() {
+        document.getElementById('chat-options-container').style.visibility = 'hidden';
+        var elements = document.getElementById('chat-options-container').getElementsByClassName("chooseAddToThisChat");
+        console.log(elements);
+        for (var i = elements.length - 1; i >=0; i--) {
+            elements[i].remove();
+        }
+    }
+
+    function inivteThisChat2() {
+        document.getElementById('chat-options-container').style.visibility = 'hidden';
+        var elements = document.getElementById('chat-options-container').getElementsByClassName("chooseAddToThisChat");
+        console.log(elements);
+        // Clear out all of the divs that are currently present
+        for (var i = elements.length - 1; i >=0; i--) {
+            elements[i].remove();
+        }
+        // This is essentially the same createChat code that is in home.ejs
+        var name=prompt("Please enter the GroupChat Name","");
+                const holder = Math.round(Date.now() / 1000);
+                var holder2;
+                var theLink;
+                var tester;
+                $.getJSON("/getCurrentUsername", function(data3, err) {
+                    holder2 = data3 + holder;
+                });
+                setTimeout(function() {
+                    $.post("/chatDataHelper", holder2, function(data) {
+                   
+                    }, "json");
+                    theLink = '/chat?chatID=' + holder2;
+
+                    setTimeout(function() {
+                        var theArr = {};
+                        theArr.name = holder2;
+                        theArr.chatName = name;
+                        $.post("/createChat", theArr, function(data2) {
+                        }, "json");
+                        setTimeout(function() {
+                            $.post("/addToChatList", theArr, function(d) {
+
+                            });
+                            setTimeout(function(dd) {
+                                var theLink2 = theLink + "&bool=true";
+                                window.location.href=theLink2;
+                            }, 1000);
+                        }, 500);
+                    }, 500);
+                }, 500);
+    }
+</script>

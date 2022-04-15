@@ -1,0 +1,29 @@
+.main-container {
+    height: 90%;
+    left: 50%;
+    width: 50%;
+    margin: auto;
+    padding: 10px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-container {
+    display: flex;
+    gap: 20px;
+}
+
+.submit-input {   
+    width: 70%;
+}
+
+.submit-button {
+    color: #1DB954;
+    border-color: #1DB954;
+}
+
+.post-container {
+    width: 100%;
+}

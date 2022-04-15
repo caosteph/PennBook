@@ -1,0 +1,330 @@
+<!-- TODO: 
+- Fix form fonts
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="userRegistration.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type = "text/javascript"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".topic-button").click(function() {
+        console.log("push");
+        $(this).toggleClass("topic-button-clicked");
+      });
+
+      $(".submit-button").click(function() {
+        let fName = $("#first-name").val();
+        let lName = $("#last-name").val();
+        let email = $("#email").val();
+        let username = $("#username").val();
+        let password = $("#password").val();
+        let birthday = $("#birthday").val();
+        let affiliation = $("#aff").val();
+        let topics = [];
+        let topicElements = $(".topic-button-clicked");
+        for (let i = 0; i < topicElements.length; i++) {
+          topics.push(topicElements[i].name);
+        } 
+
+        //BIRTHDAY INPUT FORMAT CHECKING
+        let bdayError = "";
+        let bList = birthday.split("/");
+        if (bList.length != 3) {
+          bdayError = "Birthday must be in the form mm/dd/yyyy"
+        } else {
+          let month = bList[0];
+          let day = bList[1];
+          let year = bList[2];
+
+          if (isNaN(month) || isNaN(day) || isNaN(year)) {
+            bdayError = "Please enter valid numbers for your birthday.";
+          } 
+
+          if (parseInt(month) < 1 || parseInt(month) > 12) {
+            bdayError = "Invalid birthday month.";
+          } else if (parseInt(day) < 1 || parseInt(day) > 31) {
+            bdayError = "Invalid birthday day.";
+          } else if (parseInt(month) == 2) {
+            if (parseInt(day) > 28) {
+              bdayError = "Invalid birthday day.";
+            }
+          } else if (parseInt(month) == 4 || parseInt(month) == 6 ||parseInt(month) == 9 || parseInt(month) == 11) {
+            if (parseInt(day) > 30) {
+              bdayError = "Invalid birthday day.";
+            }
+          } else if (year.length != 4) {
+            bdayError = "Invalid year.";
+          }
+        }
+
+        //EMAIL ERROR CHECKING
+        let invalidEmail = false;
+        if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+          invalidEmail = true;
+        }
+
+        if (!fName || !lName || !email || !username || !password || !birthday || !affiliation) {
+          alert("Please fill out all fields.");
+        } else if (topics.length < 2) {
+          alert("Please select at least two news topics that you are interested in.");
+        } else if (bdayError) {
+          alert(bdayError);
+        } else if (invalidEmail) {
+          alert("You have entered an invalid email address.");
+        } else {
+          $.post("/register", {
+            firstName: fName,
+            lastName: lName,
+            email: email,
+            username: username,
+            password: password,
+            birthday: birthday,
+            affiliation: affiliation,
+            topics: topics
+          }, function(data, textStatus, jqXHR) {
+              console.log(data);
+          }).done(function() {
+            window.location.href= "/home";
+
+            //Alerting user that the specified username is already taken
+            if (!data) {
+              alert("This username is unavailable.");
+            }
+          });
+        }
+      });
+    });
+  </script>
+
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <div class="container-center-horizontal">
+    <div class="user-registration-steph">
+      <div class="header">
+        <div class="header-text">Create New Account</div>
+      </div>
+      <div class="main-container">
+        <div class="center-container">
+          <div class="signup-form">
+            <div class="signup-prompt">
+              Sign up now!
+            </div>
+            <%= message%>
+            <form class="line">
+              <div class="label">First Name</div>
+              <input type="text" class="field-box form-control" id="first-name"/>
+            </form>
+            <form class="line">
+              <div class="label">Last Name</div>
+              <input type="text" class="field-box form-control" id="last-name"/>
+            </form>
+            <form class="line">
+              <div class="label">Email Address</div>
+              <input type="email" class="field-box form-control" id="email"/>
+            </form>
+            <form class="line">
+              <div class="label">Username</div>
+              <input type="text" class="field-box form-control" id="username"/>
+            </form>
+            <form class="line">
+              <div class="label">Password</div>
+              <input type="text" class="field-box form-control" id="password"/>
+            </form>
+            <form class="line">
+              <div class="label">Birthday</div>
+              <input type="text" class="field-box form-control" id="birthday"/>
+            </form>
+            <form class="line">
+              <div class="label">Affiliation</div>
+              <input type="text" class="field-box form-control" id="aff"/>
+            </form>
+            <div class="submit-container">
+              <button class = "btn button submit-button">Next</button>
+            </div>
+          </div>
+          <div class="topics-container">
+            <div class="topics-text">
+              Please select the topics you are interested in.
+            </div>
+            <div class="topics-box">
+                <div class="topic-row">
+                    <div class="button">
+                      <button class = "button btn topic-button" name="Politics">Politics</button>
+                    </div>
+                    <div class="button">
+                      <button class = "button btn topic-button" name="Wellness">Wellness</button>
+                    </div>
+                  <div class="button">
+                    <button class = "button btn topic-button" name="Travel">Travel</button>
+                  </div>
+                </div>
+                <div class="topic-row">
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Style and Beauty">Style and Beauty</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Parenting">Parenting</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Healthy Living">Healthy Living</button>
+                  </div>
+                </div>
+                <div class="topic-row">
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Queer Voices">Queer Voices</button>
+                  </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Food and Drink">Food and Drink</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Business">Business</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Comedy">Comedy</button>
+                  </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Sports">Sports</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Black Voices">Black Voices</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Home and Living">Home and Living</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Parents">Parents</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="The Worldpost">The Worldpost</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Weddings">Weddings</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Women">Women</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Impact">Impact</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Divorce">Divorce</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Crime">Crime</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Media">Media</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Weird News">Weird News</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Religion">Religion</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Style">Style</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Science">Science</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="World News">World News</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Taste">Taste</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Tech">Tech</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Money">Money</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Arts">Arts</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Fifty">Fifty</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Good News">Good News</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Arts and Culture">Arts and Culture</button>
+                    </div>
+                  </div>
+                  <div class="topic-row">
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Environment">Environment</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="College">College</button>
+                    </div>
+                    <div class="button">
+                      <button class = "btn button topic-button" name="Latino Voices">Latino Voices</button>
+                    </div>
+                </div>
+                <div class="topic-row">
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Fifty">Fifty</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Good News">Good News</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Arts and Culture">Arts and Culture</button>
+                  </div>
+                </div>
+                <div class="topic-row">
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Enviornment">Environment</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="College">College</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Latino Voices">Latino Voices</button>
+                  </div>
+                </div>
+                <div class="topic-row">
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Culture and Arts">Culture and Arts</button>
+                  </div>
+                  <div class="button">
+                    <button class = "btn button topic-button" name="Education">Education</button>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      <div class="back-button">
+        <form action="/login" method="get">
+          <button class="btn btn-outline-dark" href="/login">Back to Login</button>
+        </form> 
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
