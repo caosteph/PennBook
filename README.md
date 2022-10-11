@@ -1,6 +1,6 @@
 # PennBook
 
-
+Link to video demo: https://drive.google.com/file/d/1LSD087v1XujnY6bJDDuxFN_UkO4IwadA/view?usp=sharing
 
 **System Overview and Technical Description of Components **
 
